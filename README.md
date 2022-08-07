@@ -11,11 +11,8 @@
 
   <p align="center">
     A wpf .net framework project for manage windows dns.
-    <br />
-    <a href="https://shecanir.github.io/"><strong>Open Site »</strong></a>
-    <br />
-    <br />
-    <a href="https://github.com/JalalJaleh/DnsManager/releases">Releases</a>
+    <br />  <br />
+    <a href="https  <br />://github.com/JalalJaleh/DnsManager/releases">Releases</a>
     ·
     <a href="https://github.com/JalalJaleh/DnsManager/issues">Report Bug</a>
     ·
