@@ -1,0 +1,21 @@
+﻿<Window x:Class="DnsManager.Windows.Modals.AddNewDnsModalWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:DnsManager.Windows.Modals"
+        mc:Ignorable="d"
+        Title="Dns Manager" Height="296" Width="411" WindowStartupLocation="CenterScreen">
+    <Grid>
+        <TextBox x:Name="TextBoxDns" Margin="16,121,16,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Height="32" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+        <TextBox x:Name="TextBoxDnsAlt" Margin="16,184,16,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Height="33" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+        <Button x:Name="BtnAdd" Content="Add" HorizontalAlignment="Right" Margin="0,0,16,15" VerticalAlignment="Bottom" Height="30" Width="108"/>
+        <TextBlock HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="Add New Dns" VerticalAlignment="Top" FontWeight="Bold"/>
+        <TextBlock HorizontalAlignment="Left" Margin="16,99,0,0" TextWrapping="Wrap" Text="Dns Adrress" VerticalAlignment="Top"/>
+        <TextBlock HorizontalAlignment="Left" Margin="16,163,0,0" TextWrapping="Wrap" Text="Alternative Dns" VerticalAlignment="Top"/>
+        <TextBox x:Name="TextBoxName" Margin="16,59,16,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Height="32" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+        <TextBlock HorizontalAlignment="Left" Margin="16,38,0,0" TextWrapping="Wrap" Text="Custom Name" VerticalAlignment="Top"/>
+        <Button x:Name="BtnCancel" Content="Cancel" HorizontalAlignment="Right" Margin="0,0,129,15" VerticalAlignment="Bottom" Height="30" Width="84"/>
+
+    </Grid>
+</Window>
