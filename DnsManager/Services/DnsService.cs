@@ -10,7 +10,7 @@ namespace DnsManager
 {
     public class DnsService
     {
-        public const string ItemsPath = "items.json";
+        public const string ItemsPath = "\\data.json";
 
         public DnsService()
         {
