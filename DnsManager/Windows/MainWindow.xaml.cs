@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -23,130 +24,179 @@ namespace DnsManager.Windows
         public MainWindow()
         {
             InitializeComponent();
-            App.DnsService.OnDnsListChanged += DnsService_OnDnsListChanged;
-            this.BtnSet.Click += BtnSet_Click;
-            this.BtnUnset.Click += BtnUnset_Click;
+
+            this.BtnAdd.Click += BtnAddNewDns_Click;
             this.BtnRemove.Click += BtnRemove_Click;
-            this.BtnSaveChanges.Click += BtnSaveChanges_Click;
-            this.BtnAddNewDns.Click += BtnAddNewDns_Click;
+            this.BtnConnect.Click += BtnApply_Click;
             this.BtnEdit.Click += BtnEdit_Click;
-            this.BtnUndoChanges.Click += BtnUndoChanges_Click;
+
             this.ComboBoxItems.SelectionChanged += ComboBoxItems_SelectionChanged;
-            Initialize();
+            this.MouseDown += MainWindow_MouseDown;
+
+
+            InitializeComboBox();
+
+            this.LabelVersion.Text = $"{App.Version} ❤️ Mohammad Jalal Jaleh";
+            void OpenLink()
+            {
+                Process.Start("https://github.com/jalaljaleh/DnsManager");
+                Process.Start("https://github.com/jalaljaleh");
+            }
+            ImageHeader.MouseLeftButtonDown += (s, e) => OpenLink();
+            LabelVersion.MouseLeftButtonDown += (s, e) => OpenLink();
         }
+
+        private void MainWindow_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (e.ChangedButton == MouseButton.Left)
+                this.DragMove();
+        }
+
+
+        public DnsItem CurrentDNS { get => App.DnsService.Connected; }
+        public bool IsAnyDnsConnected { get => CurrentDNS is null ? false : true; }
+        public DnsItem SelectedDNS { get => (this.ComboBoxItems.SelectedItem as DnsItem); }
+
+        void InitializeComboBox()
+        {
+            this.ComboBoxItems.Items.Clear();
+
+            foreach (var item in App.DnsService.DnsItems.OrderBy(a => a.Priority))
+                ComboBoxItems.Items.Add(item);
+
+
+            if (IsAnyDnsConnected)
+                ComboBoxItems.SelectedIndex = ComboBoxItems.Items.IndexOf(CurrentDNS);
+            else
+                ComboBoxItems.SelectedIndex = 0;
+        }
+
 
         private void ComboBoxItems_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            var item = (this.ComboBoxItems.SelectedItem as DnsItem);
-            if (item == null) return;
-            this.LabelSelectedDnsInfo.Text = item.DnsAddress.PadRight(12) + item.DnsAddressAlt;
-        }
-
-        void Initialize()
-        {
-            var list = App.DnsService.LoadDnsItems();
-            if (list == null)
+            if (!App.DnsService.DnsItems.Any())
             {
-                list = new List<DnsItem>()
-                {
-                    new DnsItem()
-                    {
-                        Name="Google",
-                        DnsAddress="8.8.8.8",
-                        DnsAddressAlt="8.8.4.4"
-                    },
-                    new DnsItem()
-                    {
-                        Name="Quad9",
-                        DnsAddress="9.9.9.9",
-                        DnsAddressAlt="149.112.112.112"
-                    },
-                    new DnsItem()
-                    {
-                        Name="Cloudflare",
-                        DnsAddress="1.1.1.1",
-                        DnsAddressAlt="1.0.0.1"
-                    }
-                };
-                App.DnsService.SaveDnsItems(list);
-            }
-            App.DnsService.DnsItems = list;
-            App.DnsService.InvokeEvent();
-        }
-        private void BtnUndoChanges_Click(object sender, RoutedEventArgs e)
-        {
-            Initialize();
-        }
+                BtnAdd.IsEnabled = true;
+                BtnEdit.IsEnabled = false;
+                BtnConnect.IsEnabled = false;
+                BtnRemove.IsEnabled = false;
 
-        private void BtnEdit_Click(object sender, RoutedEventArgs e)
-        {
-            var item = (this.ComboBoxItems.SelectedItem as DnsItem);
-            if (item == null) return;
+                LabelStatus.Content = "⚠️ No Server Found, Add Servers!";
+                LabelStatus.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FFBB5600"));
+                LabelDescription.Text = "No Server Information";
 
-            var window = new Windows.Modals.AddNewDnsModalWindow(item);
-            var result = window.ShowDialog();
-            if (result.Value)
-            {
-                App.DnsService.RemoveDns(item);
-                App.DnsService.AddDns(window.Item);
-
-                ComboBoxItems.SelectedItem = window.Item;
+                BtnConnect.Content = "Add DNS";
                 return;
             }
-        }
-        void SetSelectedToTheLastItem()
-        {
-            ComboBoxItems.SelectedIndex = ComboBoxItems.Items.Count - 1;
 
+            var selected = SelectedDNS;
+            if (selected == null) return;
+
+            LabelDescription.Text =
+                $"\t ----    Information    ----\n\n" +
+                $"DNS Name:                               \n" +
+                $" {selected.Name}\n\n" +
+                $"DNS Address:                            \n" +
+                $" {selected.DnsAddress}  &  {selected.DnsAddressAlt}\n\n" +
+                $"DNS Description:                        \n" +
+                $"{selected.Description}";
+
+            var connected = CurrentDNS;
+
+            bool isConnected = connected != null && connected == selected;
+
+            if (isConnected)
+            {
+                BtnConnect.Content = "Disconnect";
+                BtnConnect.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FFFDB171"));
+
+                LabelStatus.Content = $"🔒 Connected to {selected.Name}";
+                LabelStatus.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FF0B5D00"));
+            }
+            else
+            {
+                BtnConnect.Content = "Connect";
+                BtnConnect.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FF71D8FD"));
+
+                LabelStatus.Content = $"🔓 Not Connected";
+                LabelStatus.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FFBB5600"));
+            }
+
+            BtnAdd.IsEnabled = true;
+            BtnConnect.IsEnabled = true;
+            BtnRemove.IsEnabled = true;
+            BtnEdit.IsEnabled = true;
         }
+
         private void BtnAddNewDns_Click(object sender, RoutedEventArgs e)
         {
             var window = new Windows.Modals.AddNewDnsModalWindow();
             var result = window.ShowDialog();
             if (result.Value)
             {
-                App.DnsService.AddDns(window.Item);
-                SetSelectedToTheLastItem();
-                return;
+                App.DnsService.DnsItems.Add(window.Item);
+                App.DnsService.SaveDnsItems();
+                InitializeComboBox();
             }
         }
-
-        private void BtnUnset_Click(object sender, RoutedEventArgs e)
+        private void BtnEdit_Click(object sender, RoutedEventArgs e)
         {
-            NetworkManager.UnsetDNS();
-        }
+            if (SelectedDNS == null) return;
 
-        private void BtnSaveChanges_Click(object sender, RoutedEventArgs e)
-        {
-            App.DnsService.SaveDnsItems(App.DnsService.DnsItems);
+            var window = new Windows.Modals.AddNewDnsModalWindow(SelectedDNS);
+            var result = window.ShowDialog();
+            if (result.Value)
+            {
+                App.DnsService.DnsItems.Remove(SelectedDNS);
+                App.DnsService.DnsItems.Add(window.Item);
+                App.DnsService.SaveDnsItems();
+                InitializeComboBox();
+            }
         }
-
         private void BtnRemove_Click(object sender, RoutedEventArgs e)
         {
-            var item = (this.ComboBoxItems.SelectedItem as DnsItem);
-            if (item == null) return;
+            if (SelectedDNS == null) return;
 
-            App.DnsService.RemoveDns(item);
-            SetSelectedToTheLastItem();
+            App.DnsService.DnsItems.Remove(SelectedDNS);
+            App.DnsService.SaveDnsItems();
+
+            InitializeComboBox();
         }
-
-        private void BtnSet_Click(object sender, RoutedEventArgs e)
+        private void BtnApply_Click(object sender, RoutedEventArgs e)
         {
-            var item = (this.ComboBoxItems.SelectedItem as DnsItem);
-            if (item == null) return;
+            if (BtnConnect.Content == "Disconnect")
+            {
+                NetworkManager.UnsetDNS();
 
-            NetworkManager.SetDNS(item.DnsAddress, item.DnsAddressAlt);
+                if (IsAnyDnsConnected)
+                {
+                    App.DnsService.Connected.IsConnected = false;
+                    App.DnsService.SaveDnsItems();
+
+                    InitializeComboBox();
+                    return;
+                }
+                //   MessageBox.Show($"DNS Disconnected Successfuly !");
+
+            }
+
+
+            if (this.SelectedDNS == null) return;
+
+            NetworkManager.SetDNS(SelectedDNS.DnsAddress, SelectedDNS.DnsAddressAlt);
+
+            App.DnsService.ChangeConnection(SelectedDNS);
+            App.DnsService.SaveDnsItems();
+
+            InitializeComboBox();
+
+            //  MessageBox.Show($"DNS {item.Name} Connected Successfuly !");
+
         }
 
-        private void DnsService_OnDnsListChanged(object sender, DnsService.DnsListChangedEventArgs e)
-        {
-            this.ComboBoxItems.Items.Clear();
-          e.UpdatedList.ForEach(x=>this.ComboBoxItems.Items.Add(x));
-        }
 
-        private void Button_Click(object sender, RoutedEventArgs e)
-        {
-            Process.Start("https://jalaljaleh.github.io/");
-        }
+
+
+
     }
 }

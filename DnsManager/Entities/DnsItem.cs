@@ -9,9 +9,13 @@ namespace DnsManager
     public class DnsItem
     {
         public string Name { get; set; }
+        public string Description { get; set; }
+
         public string DnsAddress { get; set; }
         public string DnsAddressAlt { get; set; }
 
-        public string GetDisplayName() => Name + " " + DnsAddress + " " + DnsAddressAlt;
+        public bool IsConnected { get; set; } = false;
+        public int Priority { get; set; } = 999;
+
     }
 }

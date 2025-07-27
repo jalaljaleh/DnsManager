@@ -28,9 +28,19 @@ namespace DnsManager.Windows.Modals
                 TextBoxName.Text = item.Name;
                 TextBoxDns.Text = item.DnsAddress;
                 TextBoxDnsAlt.Text = item.DnsAddressAlt;
+                TextBoxDescription.Text = item.Description;
+                TextBoxPriority.Text = item.Priority.ToString();
             }
             this.BtnAdd.Click += BtnAdd_Click;
             this.BtnCancel.Click += BtnCancel_Click;
+
+            this.MouseDown += AddNewDnsModalWindow_MouseLeftButtonDown;
+        }
+
+        private void AddNewDnsModalWindow_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            if (e.ChangedButton == MouseButton.Left)
+                this.DragMove();
         }
 
         private void BtnCancel_Click(object sender, RoutedEventArgs e)
@@ -45,7 +55,9 @@ namespace DnsManager.Windows.Modals
             {
                 Name = TextBoxName.Text,
                 DnsAddress = TextBoxDns.Text,
-                DnsAddressAlt = TextBoxDnsAlt.Text
+                DnsAddressAlt = TextBoxDnsAlt.Text,
+                Description = TextBoxDescription.Text,
+                Priority = int.TryParse(TextBoxPriority.Text,out int priority) ? priority : 999,
             };
             this.DialogResult = true;
             this.Close();

@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Management;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -12,35 +13,23 @@ namespace DnsManager
     {
         public const string ItemsPath = "\\data.json";
 
+        public List<DnsItem> DnsItems;
         public DnsService()
         {
-            DnsItems = new List<DnsItem>();
+            DnsItems = LoadDnsItems();
 
         }
-        public List<DnsItem> DnsItems;
-        public void InvokeEvent()
+
+        public DnsItem Connected { get => DnsItems.FirstOrDefault(a => a.IsConnected); }
+        public bool ChangeConnection(DnsItem newDns)
         {
-            OnDnsListChanged?.Invoke(this, new DnsListChangedEventArgs()
-            {
-                UpdatedList = this.DnsItems
-            });
+            if (Connected != null)
+                Connected.IsConnected = false;
+
+            newDns.IsConnected = true;
+            return true;
         }
-        public void AddDns(DnsItem value)
-        {
-            DnsItems.Add(value);
-            InvokeEvent();
-        }
-        public void RemoveDns(DnsItem value)
-        {
-            DnsItems.Remove(value);
-            InvokeEvent();
-        }
-        public event EventHandler<DnsListChangedEventArgs> OnDnsListChanged;
-        public class DnsListChangedEventArgs : EventArgs
-        {
-            public List<DnsItem> UpdatedList { get; set; }
-        }
-        public List<DnsItem> LoadDnsItems()
+        private List<DnsItem> LoadDnsItems()
         {
             try
             {
@@ -50,14 +39,17 @@ namespace DnsManager
             }
             catch
             {
-                return default(List<DnsItem>);
+                return new List<DnsItem>()
+                {
+                  //  new DnsItem(){Name="System Default",Description="The ISP provides the default DNS servers. These are automatically configured when you connect to the internet through their network. !",IsConnected = true,Priority=-1}
+                };
             }
         }
-        public bool SaveDnsItems(List<DnsItem> items)
+        public bool SaveDnsItems()
         {
             try
             {
-                string data = JsonConvert.SerializeObject(items);
+                string data = JsonConvert.SerializeObject(this.DnsItems);
                 File.WriteAllText(App.DirectoryPath + ItemsPath, data);
                 return true;
             }

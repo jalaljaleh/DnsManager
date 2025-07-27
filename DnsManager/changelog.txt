@@ -1,0 +1,14 @@
+﻿## 1.2v - 2025-07-27
+
+- Better user interface
+- Auto switch to the connected dns server at start.
+
+- Add status label
+- Add "Connect" & "Disconnect" buttons.
+- Add Information part to show details and information about dns servers.
+- Add Priority to sort servers.
+
+
+## 1.0.0v - 2022-08-07
+
+- Initial release
