@@ -53,9 +53,9 @@ namespace DnsManager.Windows
         }
 
 
-        public DnsItem CurrentDNS { get => App.DnsService.Connected; }
-        public bool IsAnyDnsConnected { get => CurrentDNS is null ? false : true; }
-        public DnsItem SelectedDNS { get => (this.ComboBoxItems.SelectedItem as DnsItem); }
+        public DnsItem CurrentSystemDNS { get => App.DnsService.Connected; }
+        public DnsItem CbSelectedDns { get => (this.ComboBoxItems.SelectedItem as DnsItem); }
+        public bool IsAnyDnsConnected { get => CurrentSystemDNS is null ? false : true; }
 
         void InitializeComboBox()
         {
@@ -66,12 +66,23 @@ namespace DnsManager.Windows
 
 
             if (IsAnyDnsConnected)
-                ComboBoxItems.SelectedIndex = ComboBoxItems.Items.IndexOf(CurrentDNS);
+                ComboBoxItems.SelectedIndex = ComboBoxItems.Items.IndexOf(CurrentSystemDNS);
             else
                 ComboBoxItems.SelectedIndex = 0;
         }
 
-
+        void OnConnected()
+        {
+            LabelStatus.Content = $"🔒 Connected to {CurrentSystemDNS.Name}";
+            LabelStatus.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FF0B5D00"));
+            borderStatus.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FFC6FFB3"));
+        }
+        void OnDisconnected()
+        {
+            LabelStatus.Content = $"🔓 Not Connected";
+            LabelStatus.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FFBB5600"));
+            borderStatus.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FFFFEEB3"));
+        }
         private void ComboBoxItems_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (!App.DnsService.DnsItems.Any())
@@ -89,37 +100,36 @@ namespace DnsManager.Windows
                 return;
             }
 
-            var selected = SelectedDNS;
-            if (selected == null) return;
+            if (CbSelectedDns == null) return;
 
             LabelDescription.Text =
-                $"\t ----    Information    ----\n\n" +
+                $"\n" +
                 $"DNS Name:                               \n" +
-                $" {selected.Name}\n\n" +
+                $" {CbSelectedDns.Name}\n\n" +
                 $"DNS Address:                            \n" +
-                $" {selected.DnsAddress}  &  {selected.DnsAddressAlt}\n\n" +
+                $" {CbSelectedDns.DnsAddress}  &  {CbSelectedDns.DnsAddressAlt}\n\n" +
                 $"DNS Description:                        \n" +
-                $"{selected.Description}";
+                $"{CbSelectedDns.Description}";
 
-            var connected = CurrentDNS;
 
-            bool isConnected = connected != null && connected == selected;
+            if (CurrentSystemDNS != null)
+            {
+                OnConnected();
+            }
+            else
+            {
+                OnDisconnected();
+            }
 
-            if (isConnected)
+            if (CurrentSystemDNS != null && CurrentSystemDNS == CbSelectedDns)
             {
                 BtnConnect.Content = "Disconnect";
                 BtnConnect.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FFFDB171"));
-
-                LabelStatus.Content = $"🔒 Connected to {selected.Name}";
-                LabelStatus.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FF0B5D00"));
             }
             else
             {
                 BtnConnect.Content = "Connect";
                 BtnConnect.Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FF71D8FD"));
-
-                LabelStatus.Content = $"🔓 Not Connected";
-                LabelStatus.Foreground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FFBB5600"));
             }
 
             BtnAdd.IsEnabled = true;
@@ -141,13 +151,13 @@ namespace DnsManager.Windows
         }
         private void BtnEdit_Click(object sender, RoutedEventArgs e)
         {
-            if (SelectedDNS == null) return;
+            if (CbSelectedDns == null) return;
 
-            var window = new Windows.Modals.AddNewDnsModalWindow(SelectedDNS);
+            var window = new Windows.Modals.AddNewDnsModalWindow(CbSelectedDns);
             var result = window.ShowDialog();
             if (result.Value)
             {
-                App.DnsService.DnsItems.Remove(SelectedDNS);
+                App.DnsService.DnsItems.Remove(CbSelectedDns);
                 App.DnsService.DnsItems.Add(window.Item);
                 App.DnsService.SaveDnsItems();
                 InitializeComboBox();
@@ -155,9 +165,9 @@ namespace DnsManager.Windows
         }
         private void BtnRemove_Click(object sender, RoutedEventArgs e)
         {
-            if (SelectedDNS == null) return;
+            if (CbSelectedDns == null) return;
 
-            App.DnsService.DnsItems.Remove(SelectedDNS);
+            App.DnsService.DnsItems.Remove(CbSelectedDns);
             App.DnsService.SaveDnsItems();
 
             InitializeComboBox();
@@ -181,11 +191,11 @@ namespace DnsManager.Windows
             }
 
 
-            if (this.SelectedDNS == null) return;
+            if (this.CbSelectedDns == null) return;
 
-            NetworkManager.SetDNS(SelectedDNS.DnsAddress, SelectedDNS.DnsAddressAlt);
+            NetworkManager.SetDNS(CbSelectedDns.DnsAddress, CbSelectedDns.DnsAddressAlt);
 
-            App.DnsService.ChangeConnection(SelectedDNS);
+            App.DnsService.ChangeConnection(CbSelectedDns);
             App.DnsService.SaveDnsItems();
 
             InitializeComboBox();
