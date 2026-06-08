@@ -1,4 +1,17 @@
-﻿## 1.2v - 2025-07-27
+﻿## 1.3v - 2026-06-09
+
+1. DNS query logging and statistics
+2. Request filtering and blocking
+3. Custom DNS rule creation
+4. DNS-level ad blocking integration
+5. Query history and analytics
+6. Scheduled DNS switching
+7. Network-specific DNS configurations
+8. DoQ (DNS-over-QUIC) full implementation
+9. DNSSEC validation indicators
+10. DNS leak detection test
+
+## 1.2v - 2025-07-27
 
 - Better user interface
 - Auto switch to the connected dns server at start.

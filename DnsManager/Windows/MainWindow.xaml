@@ -5,21 +5,25 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:DnsManager.Windows"
         mc:Ignorable="d"
-        Title="Dns Manager" BorderThickness="6" BorderBrush="WhiteSmoke" Height="718" Width="380" WindowStartupLocation="CenterScreen" ResizeMode="NoResize" Icon="/Assets/dnsManager.ico" WindowStyle="SingleBorderWindow">
+        Title="Dns Manager" BorderThickness="6" BorderBrush="WhiteSmoke" Height="820" Width="420" WindowStartupLocation="CenterScreen" ResizeMode="NoResize" Icon="/Assets/dnsManager.ico" WindowStyle="SingleBorderWindow">
     <Border x:Name="borderMain" Margin="10,10,10,10" BorderThickness="2,2,2,2" CornerRadius="2,2,2,2">
         <Grid x:Name="GridMain">
             <Border x:Name="borderStatus" Margin="1,202,-1,0" Height="40" VerticalAlignment="Top" MaxHeight="40" MinHeight="40" Background="#FFFFEEB3" CornerRadius="5,5,5,5" BorderThickness="2,2,2,2" ClipToBounds="True" >
                 <Label x:Name="LabelStatus" Content="Status: 🔓 Not Connected" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="16" ScrollViewer.VerticalScrollBarVisibility="Disabled" Background="{x:Null}" Foreground="#FFBB5600" FontWeight="Bold"/>
             </Border>
             <TextBlock TextWrapping="Wrap" Text="DNS Manager" Width="208" FontWeight="Bold" FontSize="22" HorizontalAlignment="Center" Margin="0,161,0,0" VerticalAlignment="Top" TextAlignment="Center" Height="36"/>
-            <TextBlock x:Name="LabelVersion" Text="[version]" FontSize="12" TextAlignment="Center" VerticalAlignment="Top" Height="31" Margin="0,627,0,0" Cursor="Hand" FontFamily="Segoe UI Emoji"/>
+            <TextBlock x:Name="LabelVersion" Text="[version]" FontSize="12" TextAlignment="Center" VerticalAlignment="Top" Height="31" Margin="0,729,0,0" Cursor="Hand" FontFamily="Segoe UI Emoji"/>
             <Image x:Name="ImageHeader"  Height="148" Width="168" Source="/Assets/dnsManager.png" VerticalAlignment="Top" Margin="90,10,90,0" Cursor="Hand"/>
-            <Grid Height="313" Margin="19,261,19,0" VerticalAlignment="Top">
-                <Border x:Name="BorderStatus" Height="262" VerticalAlignment="Top" Margin="0,33,0,0" BorderThickness="2,0,2,2" CornerRadius="2,2,2,2" Padding="5,5,5,5" Background="#FFF3FCFF">
+
+            <!-- DNS Information Panel -->
+            <Grid Height="278" Margin="19,247,19,0" VerticalAlignment="Top">
+                <Border x:Name="BorderStatus" Margin="0,33,0,0" BorderThickness="2,0,2,2" CornerRadius="2,2,2,2" Padding="5,5,5,5" Background="#FFF3FCFF">
                     <Border.BorderBrush>
                         <SolidColorBrush Color="#FFACACAC" Opacity="0.8"/>
                     </Border.BorderBrush>
-                    <TextBlock x:Name="LabelDescription" TextWrapping="WrapWithOverflow" Text="- -" FontWeight="Bold" FontSize="14" Foreground="Black" TextAlignment="Justify"/>
+                    <ScrollViewer VerticalScrollBarVisibility="Auto">
+                        <TextBlock x:Name="LabelDescription" TextWrapping="WrapWithOverflow" Text="- -" FontWeight="Bold" FontSize="12" Foreground="Black" TextAlignment="Justify"/>
+                    </ScrollViewer>
                 </Border>
                 <Grid VerticalAlignment="Top" Width="NaN" Height="34">
                     <Grid.ColumnDefinitions>
@@ -27,14 +31,31 @@
                         <ColumnDefinition Width="89"/>
                     </Grid.ColumnDefinitions>
                     <WrapPanel Orientation="Vertical" MaxWidth="330" Grid.Column="1" Background="#FFEFEFEF">
-                        <Button x:Name="BtnAdd" Content="+" Height="34" Width="28" Background="{x:Null}" BorderBrush="#FFACACAC" BorderThickness="0,2,0,0" Foreground="Black" FontSize="20" FontStyle="Italic" VerticalContentAlignment="Stretch" HorizontalContentAlignment="Center"/>
-                        <Button x:Name="BtnEdit" Content="🖋️" Height="34" Width="32" BorderBrush="#FFACACAC" BorderThickness="0,2,0,0" Foreground="Black" FontSize="18" HorizontalContentAlignment="Left" VerticalContentAlignment="Center" Padding="0,1,1,1" Background="{x:Null}"/>
-                        <Button x:Name="BtnRemove" Content="🗑️" Height="34" Width="29" BorderBrush="#FFACACAC" BorderThickness="0,2,2,0" Foreground="Black" FontWeight="Light" FontSize="16" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Background="{x:Null}"/>
+                        <Button x:Name="BtnAdd" Content="+" Height="34" Width="28" Background="{x:Null}" BorderBrush="#FFACACAC" BorderThickness="0,2,0,0" Foreground="Black" FontSize="20" FontStyle="Italic" VerticalContentAlignment="Stretch" HorizontalContentAlignment="Center" ToolTip="Add new DNS server"/>
+                        <Button x:Name="BtnEdit" Content="🖋️" Height="34" Width="32" BorderBrush="#FFACACAC" BorderThickness="0,2,0,0" Foreground="Black" FontSize="18" HorizontalContentAlignment="Left" VerticalContentAlignment="Center" Padding="0,1,1,1" Background="{x:Null}" ToolTip="Edit selected DNS server"/>
+                        <Button x:Name="BtnRemove" Content="🗑️" Height="34" Width="29" BorderBrush="#FFACACAC" BorderThickness="0,2,2,0" Foreground="Black" FontWeight="Light" FontSize="16" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" Background="{x:Null}" ToolTip="Delete selected DNS server"/>
                     </WrapPanel>
                     <ComboBox x:Name="ComboBoxItems" BorderBrush="{x:Null}" IsReadOnly="True" SelectedIndex="0" DisplayMemberPath="Name" Text="Select an Item" BorderThickness="2,2,2,2" Background="{x:Null}" Padding="10,10,5,3"/>
                 </Grid>
             </Grid>
-            <Button x:Name="BtnConnect" Content="Connect" Height="37" Margin="27,579,25,0" VerticalAlignment="Top" Background="#FF71D8FD" BorderBrush="#FF60C3F7" BorderThickness="2,2,2,2" FontWeight="Bold" Foreground="black"/>
+
+            <!-- Action Buttons -->
+            <Button x:Name="BtnConnect" Content="Connect" Height="37" Margin="27,625,25,0" VerticalAlignment="Top" Background="#FF71D8FD" BorderBrush="#FF60C3F7" BorderThickness="2,2,2,2" FontWeight="Bold" Foreground="black" ToolTip="Connect to selected DNS server"/>
+
+            <!-- Diagnostics Buttons -->
+            <StackPanel Orientation="Horizontal" Height="40" Margin="27,670,25,0" VerticalAlignment="Top">
+                <Button x:Name="BtnPing" Content="📡 Ping" Height="37" Background="#FFFFE0B2" BorderBrush="#FFFFB74D" BorderThickness="1,1,1,1" FontWeight="Bold" Foreground="black" ToolTip="Test connectivity to DNS server" Padding="10,0" Margin="0,0,4,0"/>
+                <Button x:Name="BtnTestDns" Content="🧪 Test DNS" Height="37" Background="#FFC8E6C9" BorderBrush="#FF81C784" BorderThickness="1,1,1,1" FontWeight="Bold" Foreground="black" ToolTip="Comprehensive DNS test" Padding="10,0" Margin="0,0,4,0"/>
+                <Button x:Name="BtnTestUrl" Content="🌐 Test URL" Height="37" Background="#FFBBDEFB" BorderBrush="#FF64B5F6" BorderThickness="1,1,1,1" FontWeight="Bold" Foreground="black" ToolTip="Test URL accessibility through DNS" Padding="10,0"/>
+            </StackPanel>
+
+            <!-- Test Result Display -->
+            <Border x:Name="BorderTestResults" Margin="20,550,18,0" Height="61" MinHeight="0" VerticalAlignment="Top" BorderThickness="1,1,1,1" CornerRadius="2,2,2,2" Padding="8" Background="#FFFFF8E1" BorderBrush="#FFFFE0B2">
+                <StackPanel>
+                    <TextBlock x:Name="LabelTestResult" Text="Test Result" FontWeight="Bold" FontSize="11" Foreground="#FF666666" Margin="0,0,0,4"/>
+                    <TextBlock x:Name="TextBlockTestOutput" Text="" TextWrapping="Wrap" FontSize="10" Foreground="Black"/>
+                </StackPanel>
+            </Border>
 
         </Grid>
 

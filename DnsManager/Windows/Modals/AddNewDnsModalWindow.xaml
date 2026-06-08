@@ -5,24 +5,78 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:DnsManager.Windows.Modals"
         mc:Ignorable="d"
-        Title="Dns Manager" Height="465" Width="411" WindowStartupLocation="CenterScreen" ResizeMode="NoResize" Icon="/Assets/dnsManager.ico" Topmost="True">
-    <Grid>
-        <TextBox x:Name="TextBoxDns" Margin="16,128,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Height="32" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" HorizontalAlignment="Left" Width="176"/>
-        <TextBox x:Name="TextBoxDnsAlt" Margin="215,128,15,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Height="33" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
-        <Button x:Name="BtnAdd" Content="Add" HorizontalAlignment="Right" Margin="0,0,16,8" VerticalAlignment="Bottom" Height="30" Width="135" Background="#FFDCFFC9"/>
-        <TextBlock HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="Add New Dns" VerticalAlignment="Top" FontWeight="UltraBold" Width="245" Height="23"/>
-        <TextBlock HorizontalAlignment="Left" Margin="16,106,0,0" TextWrapping="Wrap" Text="Dns Adrress" VerticalAlignment="Top"/>
-        <TextBlock HorizontalAlignment="Left" Margin="215,106,0,0" TextWrapping="Wrap" Text="Alternative Dns" VerticalAlignment="Top"/>
-        
-        <TextBlock HorizontalAlignment="Left" Margin="16,38,0,0" TextWrapping="Wrap" Text="Custom Name" VerticalAlignment="Top"/>
-        <TextBox x:Name="TextBoxName" Margin="16,59,16,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Height="32" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
-        <Button x:Name="BtnCancel" Content="Cancel" HorizontalAlignment="Right" Margin="0,0,156,8" VerticalAlignment="Bottom" Height="30" Width="84" Background="#FFFFECEC" BorderBrush="{x:Null}"/>
-        
-        <TextBlock HorizontalAlignment="Left" Margin="16,166,0,0" TextWrapping="Wrap" Text="Description" VerticalAlignment="Top"/>
-        <TextBox x:Name="TextBoxDescription" Margin="15,188,15,0" TextWrapping="Wrap" Text="Description" VerticalAlignment="Top" Height="126" TextAlignment="Justify" AcceptsReturn="True"/>
+        Title="Add/Edit DNS Server" Height="720" Width="550" WindowStartupLocation="CenterScreen" ResizeMode="NoResize" Icon="/Assets/dnsManager.ico" Topmost="True">
+    <Grid Background="White">
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
+            <StackPanel Margin="16">
+                <!-- Header -->
+                <TextBlock Text="Add New DNS Server" FontWeight="UltraBold" FontSize="16" Margin="0,0,0,16"/>
 
-        <TextBlock  HorizontalAlignment="Left" Margin="15,333,0,0" TextWrapping="Wrap" Text="Priority" VerticalAlignment="Top"/>
-        <TextBox x:Name="TextBoxPriority" Margin="15,355,0,0" TextWrapping="Wrap" Text="999" VerticalAlignment="Top" Height="32" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" HorizontalAlignment="Left" Width="89"/>
+                <!-- Basic Information -->
+                <TextBlock Text="BASIC INFORMATION" FontWeight="Bold" FontSize="11" Foreground="#FF666666" Margin="0,0,0,8"/>
 
+                <TextBlock Text="Server Name *" Margin="0,0,0,4"/>
+                <TextBox x:Name="TextBoxName" Margin="0,0,0,12" Padding="8" Height="32" TextWrapping="Wrap" VerticalContentAlignment="Center"/>
+
+                <TextBlock Text="Description" Margin="0,0,0,4"/>
+                <TextBox x:Name="TextBoxDescription" Margin="0,0,0,12" Padding="8" Height="80" TextWrapping="Wrap" AcceptsReturn="True" VerticalAlignment="Top"/>
+
+                <!-- DNS Addresses -->
+                <TextBlock Text="DNS SERVERS" FontWeight="Bold" FontSize="11" Foreground="#FF666666" Margin="0,12,0,8"/>
+
+                <TextBlock Text="Primary DNS Address (IP) *" Margin="0,0,0,4"/>
+                <TextBox x:Name="TextBoxDns" Margin="0,0,0,12" Padding="8" Height="32" TextWrapping="Wrap" VerticalContentAlignment="Center" ToolTip="e.g., 8.8.8.8"/>
+
+                <TextBlock Text="Secondary DNS Address (IP)" Margin="0,0,0,4"/>
+                <TextBox x:Name="TextBoxDnsAlt" Margin="0,0,0,12" Padding="8" Height="32" TextWrapping="Wrap" VerticalContentAlignment="Center" ToolTip="e.g., 8.8.4.4"/>
+
+                <!-- Protocol Selection -->
+                <TextBlock Text="PROTOCOL OPTIONS" FontWeight="Bold" FontSize="11" Foreground="#FF666666" Margin="0,12,0,8"/>
+
+                <TextBlock Text="DNS Protocol *" Margin="0,0,0,4"/>
+                <ComboBox x:Name="ComboBoxProtocol" Margin="0,0,0,4" Height="32" Padding="8" SelectedIndex="0">
+                    <TextBlock Tag="0" Text="Standard DNS (UDP) - Port 53"/>
+                    <TextBlock Tag="1" Text="DNS over TLS (DoT) - Port 853 - Encrypted"/>
+                    <TextBlock Tag="2" Text="DNS over HTTPS (DoH) - Port 443 - Encrypted"/>
+                    <TextBlock Tag="3" Text="DNS over QUIC (DoQ) - Port 443 - Experimental"/>
+                </ComboBox>
+
+                <TextBlock Text="ℹ️ Select TLS, HTTPS, or QUIC for encrypted DNS queries" FontSize="10" Foreground="#FF666666" Margin="0,0,0,12" TextWrapping="Wrap"/>
+
+                <!-- Encrypted Protocol Options -->
+                <Border x:Name="EncryptedProtocolOptions" BorderThickness="1" BorderBrush="#FFCCCCCC" Padding="12" Margin="0,0,0,12" Background="#FFFAFAFA">
+                    <StackPanel>
+                        <TextBlock Text="⚠️ For encrypted protocols (TLS/HTTPS/QUIC)" FontWeight="Bold" FontSize="10" Foreground="#FF8B5600" Margin="0,0,0,8"/>
+
+                        <TextBlock Text="Hostname (SNI) *" Margin="0,0,0,4"/>
+                        <TextBox x:Name="TextBoxHostName" Margin="0,0,0,8" Padding="8" Height="32" TextWrapping="Wrap" VerticalContentAlignment="Center" ToolTip="e.g., dns.google, dns.adguard.com (required for encrypted protocols)"/>
+
+                        <TextBlock Text="Custom Port (Optional)" Margin="0,0,0,4"/>
+                        <TextBox x:Name="TextBoxCustomPort" Margin="0,0,0,8" Padding="8" Height="32" TextWrapping="Wrap" VerticalContentAlignment="Center" ToolTip="Leave empty for default port"/>
+
+                        <TextBlock x:Name="TextBlockHttpsPath" Text="HTTPS Path (for DoH only)" Margin="0,0,0,4"/>
+                        <TextBox x:Name="TextBoxHttpsPath" Margin="0,0,0,8" Padding="8" Height="32" TextWrapping="Wrap" VerticalContentAlignment="Center" Text="/dns-query"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Additional Settings -->
+                <TextBlock Text="ADDITIONAL SETTINGS" FontWeight="Bold" FontSize="11" Foreground="#FF666666" Margin="0,0,0,8"/>
+
+                <TextBlock Text="Priority (Lower = Higher Priority)" Margin="0,0,0,4"/>
+                <TextBox x:Name="TextBoxPriority" Margin="0,0,0,12" Padding="8" Height="32" Text="999" TextWrapping="Wrap" VerticalContentAlignment="Center" ToolTip="Used for sorting servers"/>
+
+                <TextBlock Text="Notes / Comments" Margin="0,0,0,4"/>
+                <TextBox x:Name="TextBoxNotes" Margin="0,0,0,12" Padding="8" Height="60" TextWrapping="Wrap" AcceptsReturn="True" VerticalAlignment="Top" ToolTip="Optional notes about this DNS configuration"/>
+
+                <!-- Validation Message -->
+                <TextBlock x:Name="TextBlockValidation" Margin="0,12,0,12" TextWrapping="Wrap" Foreground="#FFBB5600" FontSize="10"/>
+
+                <!-- Buttons -->
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,12,0,0">
+                    <Button x:Name="BtnCancel" Content="Cancel" Height="36" Width="100" Background="#FFFFECEC" BorderBrush="{x:Null}" Margin="0,0,8,0"/>
+                    <Button x:Name="BtnAdd" Content="Add Server" Height="36" Width="140" Background="#FFDCFFC9"/>
+                </StackPanel>
+            </StackPanel>
+        </ScrollViewer>
     </Grid>
 </Window>
